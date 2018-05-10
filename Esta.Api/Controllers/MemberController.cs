@@ -20,26 +20,31 @@ namespace Esta.Api.Controllers
             try
             {
                 ppobDataContextDataContext db = new ppobDataContextDataContext();
-                var data = db.Members.Select(m => m);
-                if (data == null)
-                {
-                    member.api_status = "Empty";
-                    member.api_message =string.Empty;
-                }
-                else
-                {
-                    member.api_status = "Success";
-                    member.api_message = string.Empty;
-                    member.items = data;
-                }
+                var data = from i in db.Members
+                           select new
+                           {
+                               i.MemberId,
+                               i.Nama,
+                               i.NoTelpon,
+                               i.Password,
+                               i.Photo,
+                               i.KodeReverall,
+                               i.Token,
+                               i.TypeMember,
+                               i.TglBergabung,
+                               i.Status
+                           };
 
+                member.api_status = "1";
+                member.api_message = "Success";
+                member.items = data;
 
             }
             catch (Exception ex)
             {
 
-                member.api_status = "Error";
-                member.api_message = ex.Message;
+                member.api_status = "0";
+                member.api_message = "Error";
                 member.items = null;
             }
             return member;
@@ -56,7 +61,8 @@ namespace Esta.Api.Controllers
                 ppobDataContextDataContext db = new ppobDataContextDataContext();
                 var data = from i in db.Members
                            where i.MemberId == Id
-                           select new {
+                           select new
+                           {
                                i.MemberId,
                                i.Nama,
                                i.NoTelpon,
@@ -68,17 +74,10 @@ namespace Esta.Api.Controllers
                                i.Status
                            };
 
-                if (data == null)
-                {
-                    member.api_status = "Empty";
-                    member.api_message = string.Empty;
-                }
-                else
-                {
-                    member.api_status = "Success";
-                    member.api_message = string.Empty;
-                    member.items = data;
-                }
+                member.api_status = "1";
+                member.api_message = "Success";
+                member.items = data;
+
             }
             catch (Exception ex)
             {
@@ -92,7 +91,7 @@ namespace Esta.Api.Controllers
 
         [HttpPost]
         [Route("CreateMember")]
-        public OutputModels CreateMember(int MemberId, string Photo, 
+        public OutputModels CreateMember(int MemberId, string Photo,
                                 string Nama, string Email, string NoTelpon,
                                 string KodeReverall, string Password, string TypeMember, DateTime TglBergabung,
                                 string PhotoKTP, string PhotoRekening, string PhotoKTPSelfie, int Status, string VoidRemark,
@@ -131,17 +130,19 @@ namespace Esta.Api.Controllers
 
                 if (IsSave > 0)
                 {
-                    member.api_status = "Success";
+                    member.api_status = "1";
+                    member.api_message = "Success";
                 }
                 else
                 {
-                    member.api_status = "Error";
+                    member.api_status = "0";
+                    member.api_message = "Error";
                 }
             }
             catch (Exception ex)
             {
-                member.api_status = "Error";
-                member.api_message = ex.Message;
+                member.api_status = "0";
+                member.api_message = "Error " + ex.Message;
                 member.items = null;
             }
             return member;
